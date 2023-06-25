@@ -4,6 +4,12 @@ Tarefas a serem executadas:
 
 [ ] 1.Criar Indexador
     [ ] - criar uma tabela de sı́mbolos T
+        Proposição:
+            --------------------------------------------------
+                key     |   value
+            --------------------------------------------------
+                keyword |   lista das paginas (files)
+            --------------------------------------------------
 
 [ ] 2.Google’s PageRank
     [ ] - criar struct Page
