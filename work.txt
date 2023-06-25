@@ -1,0 +1,14 @@
+ARQUIVO PARA ACOMPANHAMENTO DO DESENVOLVIMENTO
+
+Tarefas a serem executadas:
+
+[ ] 1.Criar Indexador
+    [ ] - criar uma tabela de sı́mbolos T
+
+[ ] 2.Google’s PageRank
+    [ ] - criar struct Page
+    [ ] - criar algoritmo de calculo do PageRank (Power Method)
+    [ ] - criar uma lista das paginas ordenadas pelo seu PageRank
+
+[ ] 3.Processador de consultas
+    [ ] - criar o Processador e gerar as saídas
