@@ -3,13 +3,15 @@ ARQUIVO PARA ACOMPANHAMENTO DO DESENVOLVIMENTO
 Tarefas a serem executadas:
 
 [ ] 1.Criar Indexador
-    [ ] - criar uma tabela de sı́mbolos T
+    [x] - criar uma tabela de sı́mbolos T
         Proposição:
             --------------------------------------------------
                 key     |   value
             --------------------------------------------------
                 keyword |   lista das paginas (files)
             --------------------------------------------------
+    [ ] - Adequar key e value de acordo com a necessidade do trabalho
+
 
 [ ] 2.Google’s PageRank
     [ ] - criar struct Page
