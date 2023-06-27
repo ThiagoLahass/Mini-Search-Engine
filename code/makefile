@@ -14,13 +14,13 @@ ST: RBT
 	@ gcc -c ST.c
 
 run: clean compile
-	@ ./$(PROJ_NAME)
+	@ ./$(PROJ_NAME) /home/thiago_lahass/Documents/TBO/Trabalho_III/Mini-Search-Engine/Exemplo_pequeno_e_simples
 
 clean:
 	@ rm -f *.o $(PROJ_NAME)
 
 val: clean compile
-	@ valgrind --leak-check=full ./$(PROJ_NAME)
+	@ valgrind --leak-check=full ./$(PROJ_NAME) /home/thiago_lahass/Documents/TBO/Trabalho_III/Mini-Search-Engine/Exemplo_pequeno_e_simples
 
 # run1pdf: clean compile
 # 	@ ./$(PROJ_NAME) ${DIR_ENTRADA_1_PDF} ${DIR_SAIDA_1_PDF}
