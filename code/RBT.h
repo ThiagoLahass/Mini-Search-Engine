@@ -1,11 +1,14 @@
+/* RBT DO TIPO (CHAVE(char*), VALUE(RBT_STRING*)) */
+
 #ifndef RBT_H
 #define RBT_H
 
+#include "RBT_STRING.h"
+
 #include <stdbool.h>
 
-typedef int Value;
-typedef int Key;
-
+typedef char* Key;
+typedef char* Value;
 typedef struct node RBT;
 
 // Create an empty Red-Black-Tree.
@@ -15,49 +18,40 @@ RBT* RBT_init();
 RBT* RBT_insert(RBT *rbt, Key key, Value val);
 
 // Value paired with key: a->key
-Value RBT_get(RBT* st, Key key);
+RBT_STRING* RBT_get(RBT* rbt, Key key);
 
 // Is there a value paired with key?
-bool RBT_contains(RBT* st, Key key);
-
-// Remove key (and its value) from rbt
-void RBT_delete(RBT* st, Key key);
+bool RBT_contains(RBT* rbt, Key key);
 
 // Is the rbt empty?
-bool RBT_empty(RBT* st);
+bool RBT_empty(RBT* rbt);
 
 // Number of key-value pairs in the rbt
-int RBT_size( RBT* st );
+int RBT_size( RBT* rbt );
 
 // Clean up the rbt memory.
-void RBT_finish(RBT* st);
+void RBT_finish(RBT* rbt);
 
 // Smallest key.
-Key RBT_min(RBT* st);
+Key RBT_min(RBT* rbt);
 
 // Largest key.
-Key RBT_max(RBT* st);
+Key RBT_max(RBT* rbt);
 
 // Largest key less than or equal to key.
-Key RBT_floor(RBT* st, Key key);
+Key RBT_floor(RBT* rbt, Key key);
 
 // Smallest key greater than to equal to key.
-Key RBT_ceiling(RBT* st, Key key);
+Key RBT_ceiling(RBT* rbt, Key key);
 
 // Number of keys less than key.
-int RBT_rank(RBT* st, Key key);
-
-// Delete smallest key.
-void RBT_delmin(RBT* st);
-
-// Delete largest key.
-void RBT_delmax(RBT* st);
+int RBT_rank(RBT* rbt, Key key);
 
 // Visit all the key-value pairs in the order of their keys.
-void RBT_traverse(RBT* st, void (*visit)(RBT*));
+void RBT_traverse(RBT* rbt, void (*visit)(RBT*));
 
 // Print RBT
-void RBT_print(RBT* st);
+void RBT_print(RBT* rbt);
 
 
 #endif /* RBT_H */

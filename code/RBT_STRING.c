@@ -1,29 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "string.h"
 #include <math.h>
-#include "RBT.h"
+#include "string.h"
+#include "RBT_STRING.h"
 
+#define NULL_Value ((int)NULL)
 #define NULL_Key ((char*)NULL)
-#define NULL_Value ((RBT_STRING*)NULL)
 
 #define RED     true
 #define BLACK   false
 
 struct node {
-    Key key;            // Sorted by key.
-    RBT_STRING* val;    // Associated data.
+    Key_s key;          // Sorted by key.
     bool color;         // Bow color
-    RBT *l, *r;         // Left and right subtrees.
+    RBT_STRING *l, *r;  // Left and right subtrees.
     int size;           // Number of nodes in subtree
 };
 
 
-RBT* create_node(Key key, Value val, bool color){
-    RBT* h =  calloc(1, sizeof(RBT));
+// static RBT_STRING* create_node(Key_s key, Value_s val, bool color){
+static RBT_STRING* create_node(Key_s key, bool color){
+    RBT_STRING* h =  calloc(1, sizeof(RBT_STRING));
     h->key = strdup(key);
-    h->val = RBT_STRING_init();
-    h->val = RBT_STRING_insert(h->val, val);
     h->l = NULL;
     h->r = NULL;
     h->size = 1;
@@ -32,7 +30,7 @@ RBT* create_node(Key key, Value val, bool color){
     return h;
 }
 
-static int size(RBT *rbt) {
+static int size(RBT_STRING *rbt) {
     if (rbt == NULL){
         return 0;
     }
@@ -41,32 +39,23 @@ static int size(RBT *rbt) {
     }
 }
 
-int RBT_size( RBT* rbt ) {
+int RBT_STRING_size( RBT_STRING* rbt ) {
     return size(rbt);
 }
 
-
-int RBT_get_left_size( RBT* rbt ){
-    return size(rbt->l);
-}
-
-int RBT_get_right_size( RBT* rbt ){
-    return size(rbt->r);
-}
-
-int compare( char* key1, char* key2 ){
+static int compare( char* key1, char* key2 ){
     return strcasecmp(key1, key2);
 }
 
-bool is_red(RBT *rbt) {
+static bool is_red(RBT_STRING *rbt) {
     if (rbt == NULL){
         return BLACK;
     }
     return rbt->color; //RED == true
 }
 
-RBT* rotate_left(RBT *rbt) {
-    RBT *x = rbt->r;
+static RBT_STRING* rotate_left(RBT_STRING *rbt) {
+    RBT_STRING *x = rbt->r;
     rbt->r = x->l;
     x->l = rbt;
     x->color = x->l->color;
@@ -74,8 +63,8 @@ RBT* rotate_left(RBT *rbt) {
     return x;
 }
 
-RBT* rotate_right(RBT *rbt) {
-    RBT *x = rbt->l;
+static RBT_STRING* rotate_right(RBT_STRING *rbt) {
+    RBT_STRING *x = rbt->l;
     rbt->l = x->r;
     x->r = rbt;
     x->color = x->r->color;
@@ -83,51 +72,56 @@ RBT* rotate_right(RBT *rbt) {
     return x;
 }
 
-void flip_colors(RBT *rbt) {
+static void flip_colors(RBT_STRING *rbt) {
     rbt->color = RED;
     rbt->l->color = BLACK;
     rbt->r->color = BLACK;
 }
 
 
-RBT* RBT_init(){
+RBT_STRING* RBT_STRING_init(){
     return NULL;
 }
 
 
-RBT* RBT_insert(RBT *rbt, Key key, Value val) {
+// RBT_STRING* RBT_STRING_insert(RBT_STRING *rbt, Key_s key, Value_s val) {
+RBT_STRING* RBT_STRING_insert(RBT_STRING *rbt, Key_s key) {
     // Insert at bottom and color it red.
     if (rbt == NULL) {
-        return create_node(key, val, RED);
+        // printf("Inserindo..\n");
+        // return create_node(key, val, RED);
+        return create_node(key, RED);
     }
     int cmp = compare(key, rbt->key);
     if (cmp < 0) {
         // printf("Inserindo na esquerda..\n");
-        rbt->l = RBT_insert(rbt->l, key, val);
+        // rbt->l = RBT_STRING_insert(rbt->l, key, val);
+        rbt->l = RBT_STRING_insert(rbt->l, key);
     }
     else if (cmp > 0) {
         // printf("Inserindo na direita..\n");
-        rbt->r = RBT_insert(rbt->r, key, val);
+        // rbt->r = RBT_STRING_insert(rbt->r, key, val);
+        rbt->r = RBT_STRING_insert(rbt->r, key);
     }
     else /*cmp == 0*/ {
-        rbt->val = RBT_STRING_insert(rbt->val, val);
+        // rbt->val = val;
     }
 
     // puts("\n\n");
-    // RBT_print(rbt);
+    // RBT_STRING_print(rbt);    
     // puts("\n\n");
 
     // Lean left.
     // printf("\nrbt: %d, color: %d\n", rbt->key, rbt->color );
     if (is_red(rbt->r) && !is_red(rbt->l)){
-        // printf("Rotate left before (%d)\n", rbt->key);
+        // printf("Rotate left before (%s)\n", rbt->key);
         rbt = rotate_left(rbt);
         // printf("Rotate left after (%d)\n", rbt->key);
         rbt->l->size = size(rbt->l->l) + size(rbt->l->r) + 1;
     }
     // Balance 4-node.
     if (is_red(rbt->l) && is_red(rbt->l->l)) {
-        // printf("Rotate right before (%d)\n", rbt->key);
+        // printf("Rotate right before (%s)\n", rbt->key);
         rbt = rotate_right(rbt);
         // printf("Rotate right after (%d)\n", rbt->key);
         rbt->r->size = size(rbt->r->l) + size(rbt->r->r) + 1;
@@ -135,7 +129,7 @@ RBT* RBT_insert(RBT *rbt, Key key, Value val) {
     }
     // Split 4-node.
     if (is_red(rbt->l) && is_red(rbt->r)) {
-        // printf("Color flip (%d)\n", rbt->key);
+        // printf("Color flip (%s)\n", rbt->key);
         flip_colors(rbt);
     }
 
@@ -145,81 +139,77 @@ RBT* RBT_insert(RBT *rbt, Key key, Value val) {
 
     rbt->size = size(rbt->l) + size(rbt->r) + 1;
 
+
     return rbt;
 }
 
-static RBT_STRING* rec_get(RBT *rbt, Key key) {
+static bool rec_contains(RBT_STRING *rbt, Key_s key) {
     if (rbt == NULL) {
-        return NULL_Value;
+        return false;
     }
     int cmp = compare(key, rbt->key);
     if (cmp < 0) {
-        return rec_get(rbt->l, key);
+        return rec_contains(rbt->l, key);
     }
     else if (cmp > 0) {
-        return rec_get(rbt->r, key);
+        return rec_contains(rbt->r, key);
     }
     else /*cmp == 0*/ {
-        return rbt->val;
+        return true;
     }
 }
 
-RBT_STRING* RBT_get(RBT* rbt, Key key) {
-    return rec_get(rbt, key);
-}
-
-bool RBT_contains(RBT* rbt, Key key){
-    return rec_get(rbt, key) != NULL_Value;
+bool RBT_STRING_contains(RBT_STRING* rbt, Key_s key){
+    return rec_contains(rbt, key);
 }
 
 
-static RBT* rec_min(RBT *rbt) {
+static RBT_STRING* rec_min(RBT_STRING *rbt) {
     if (rbt->l == NULL) {
         return rbt;
     }
     return rec_min(rbt->l);
 }
 
-Key RBT_min(RBT* rbt){
-    RBT* min = rec_min(rbt);
+Key_s RBT_STRING_min(RBT_STRING* rbt){
+    RBT_STRING* min = rec_min(rbt);
     return min->key;
 }
 
 
-static RBT* rec_max(RBT *rbt) {
+static RBT_STRING* rec_max(RBT_STRING *rbt) {
     if (rbt->r == NULL) {
         return rbt;
     }
     return rec_max(rbt->r);
 }
 
-Key RBT_max(RBT* rbt){
-    RBT* max = rec_max(rbt);
+Key_s RBT_STRING_max(RBT_STRING* rbt){
+    RBT_STRING* max = rec_max(rbt);
     return max->key;
 }
 
 
-bool RBT_empty(RBT* rbt){
+bool RBT_STRING_empty(RBT_STRING* rbt){
     return rbt == NULL;
 }
 
 
-static RBT* rec_libera(RBT* rbt){
+static RBT_STRING* rec_libera(RBT_STRING* rbt){
     if( rbt != NULL ){
         rec_libera(rbt->l);
         rec_libera(rbt->r);
-        RBT_STRING_finish(rbt->val);
         free(rbt->key);
         free(rbt);
     }
     return NULL;
 }
 
-void RBT_finish(RBT* rbt){
+void RBT_STRING_finish(RBT_STRING* rbt){
     rbt = rec_libera(rbt);
 }
 
-static RBT* rec_floor(RBT *rbt, Key key) {
+static RBT_STRING* rec_floor(RBT_STRING *rbt, Key_s key) {
     if (rbt == NULL) {
         return NULL;
     }
@@ -230,7 +220,7 @@ static RBT* rec_floor(RBT *rbt, Key key) {
     if (cmp < 0) {
         return rec_floor(rbt->l, key);
     }
-    RBT *t = rec_floor(rbt->r, key);
+    RBT_STRING *t = rec_floor(rbt->r, key);
     if (t != NULL){
         return t;
     }
@@ -239,8 +229,8 @@ static RBT* rec_floor(RBT *rbt, Key key) {
     }
 }
 
-Key RBT_floor(RBT* rbt, Key key) {
-    RBT *n = rec_floor(rbt, key);
+Key_s RBT_STRING_floor(RBT_STRING* rbt, Key_s key) {
+    RBT_STRING *n = rec_floor(rbt, key);
     if (n == NULL) {
         return NULL_Key;
     }
@@ -250,7 +240,7 @@ Key RBT_floor(RBT* rbt, Key key) {
 }
 
 
-static RBT* rec_ceiling(RBT *rbt, Key key) {
+static RBT_STRING* rec_ceiling(RBT_STRING *rbt, Key_s key) {
     if (rbt == NULL) {
         return NULL;
     }
@@ -261,7 +251,7 @@ static RBT* rec_ceiling(RBT *rbt, Key key) {
     if (cmp > 0) {
         return rec_ceiling(rbt->r, key);
     }
-    RBT *t = rec_ceiling(rbt->l, key);
+    RBT_STRING *t = rec_ceiling(rbt->l, key);
     if (t != NULL){
         return t;
     }
@@ -270,8 +260,8 @@ static RBT* rec_ceiling(RBT *rbt, Key key) {
     }
 }
 
-Key RBT_ceiling(RBT* rbt, Key key) {
-    RBT *n = rec_ceiling(rbt, key);
+Key_s RBT_STRING_ceiling(RBT_STRING* rbt, Key_s key) {
+    RBT_STRING *n = rec_ceiling(rbt, key);
     if (n == NULL) {
         return NULL_Key;
     }
@@ -281,7 +271,7 @@ Key RBT_ceiling(RBT* rbt, Key key) {
 }
 
 
-static int rec_rank(RBT *rbt, Key key) {
+static int rec_rank(RBT_STRING *rbt, Key_s key) {
     if (rbt == NULL) {
         return 0;
     }
@@ -297,12 +287,12 @@ static int rec_rank(RBT *rbt, Key key) {
     }
 }
 
-int RBT_rank(RBT* rbt, Key key) {
+int RBT_STRING_rank(RBT_STRING* rbt, Key_s key) {
     return rec_rank(rbt, key);
 }
 
 
-static void rec_traverse(RBT *rbt, void (*visit)(RBT*)) {
+static void rec_traverse(RBT_STRING *rbt, void (*visit)(RBT_STRING*)) {
     if (rbt == NULL) {
         return;
     }
@@ -311,20 +301,18 @@ static void rec_traverse(RBT *rbt, void (*visit)(RBT*)) {
     rec_traverse(rbt->r, visit);
 }
 
-void RBT_traverse(RBT* rbt, void (*visit)(RBT*)) {
+void RBT_STRING_traverse(RBT_STRING* rbt, void (*visit)(RBT_STRING*)) {
     rec_traverse(rbt, visit);
 }
 
-void RBT_print(RBT* rbt){
+void RBT_STRING_print(RBT_STRING* rbt){
     printf("< ");
     if( rbt != NULL ){
-        // printf("key: %s | Color: %d | size: %d", rbt->key, rbt->color, rbt->size);
-        printf("%s", rbt->key);
-        // printf(" | Pages:\n");
-        // RBT_STRING_print(rbt->val);
-        // printf("\n");
-        RBT_print(rbt->l);
-        RBT_print(rbt->r);
+        // printf("key: %s | Value_s: %d | Color: %d | size: %d", rbt->key, rbt->val, rbt->color, rbt->size);
+        printf("key: %s | Color: %d | Size: %d", rbt->key, rbt->color, rbt->size);
+        RBT_STRING_print(rbt->l);
+        RBT_STRING_print(rbt->r);
     }
     printf("> ");
+
 }

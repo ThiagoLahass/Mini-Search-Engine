@@ -4,9 +4,6 @@
 #include <stdbool.h>
 #include "RBT.h"
 
-typedef int Value;
-typedef int Key;
-
 typedef struct st ST;
 
 // Create an empty symbol table.
@@ -16,13 +13,10 @@ ST* ST_init();
 void ST_put(ST* st, Key key, Value val);
 
 // Value paired with key: a[key] .
-Value ST_get(ST* st, Key key);
+RBT_STRING* ST_get(ST* st, Key key);
 
 // Is there a value paired with key?
 bool ST_contains(ST* st, Key key);
-
-// Remove key (and its value) from table.
-void ST_delete(ST* st, Key key);
 
 // Is the table empty?
 bool ST_empty(ST* st);
@@ -47,12 +41,6 @@ Key ST_ceiling(ST* st, Key key);
 
 // Number of keys less than key.
 int ST_rank(ST* st, Key key);
-
-// Delete smallest key.
-void ST_delmin(ST* st);
-
-// Delete largest key.
-void ST_delmax(ST* st);
 
 // Visit all the key-value pairs in the order of their keys.
 void ST_traverse(ST* st, void (*visit)(RBT*));

@@ -4,7 +4,7 @@
 
 struct st {
     RBT* rbt;
-    int size;
+    // int size;
 };
 
 
@@ -20,7 +20,7 @@ int ST_size( ST* st ) {
 
 ST* ST_init(){
     ST* new = calloc(1, sizeof(ST));
-    new->size = 1;
+    // new->size = 1;
     new->rbt = RBT_init();
 
     return new;
@@ -29,21 +29,16 @@ ST* ST_init(){
 
 void ST_put(ST* st, Key key, Value val){
     st->rbt = RBT_insert(st->rbt, key, val);
-    st->size = ST_size(st);
+    // st->size = ST_size(st);
 }
 
-Value ST_get(ST* st, Key key) {
+RBT_STRING* ST_get(ST* st, Key key) {
     return RBT_get(st->rbt, key);
 }
 
 
 bool ST_contains(ST* st, Key key){
     return RBT_contains(st->rbt, key);
-}
-
-
-void ST_delete(ST* st, Key key) {
-    RBT_delete(st->rbt, key);
 }
 
 
@@ -83,22 +78,10 @@ int ST_rank(ST* st, Key key) {
 }
 
 
-void ST_delmin(ST* st) {
-    RBT_delmin(st->rbt);
-}
-
-
-
-void ST_delmax(ST* st) {
-    RBT_delmax(st->rbt);
-}
-
-
 void ST_traverse(ST* st, void (*visit)(RBT*)) {
     RBT_traverse(st->rbt, visit);
 }
 
 void ST_print(ST* st){
     RBT_print(st->rbt);
-    printf("\nAtual size is: %d\n\n", st->size);
 }

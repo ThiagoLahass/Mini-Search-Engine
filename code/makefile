@@ -3,9 +3,12 @@ CC_FLAGS=-c -w -Wall -g -lm
 
 # all: clean compile runAll diffAll # valAll
 
-compile: RBT ST
+compile: RBT_STRING RBT ST
 	@ gcc -o $(PROJ_NAME) *.o main.c -lm 
 # -lm é usado para linkar a biblioteca math.h
+
+RBT_STRING:
+	@ gcc -c RBT_STRING.c
 
 RBT:
 	@ gcc -c RBT.c
@@ -13,14 +16,26 @@ RBT:
 ST: RBT
 	@ gcc -c ST.c
 
-run: clean compile
-	@ ./$(PROJ_NAME) /home/thiago_lahass/Documents/TBO/Trabalho_III/Mini-Search-Engine/Exemplo_pequeno_e_simples
+run1: clean compile
+	@ ./$(PROJ_NAME) /home/thiago_lahass/Documents/TBO/Trabalho_III/Mini-Search-Engine/Exemplo_mini
+
+run2: clean compile
+	@ ./$(PROJ_NAME) /home/thiago_lahass/Documents/TBO/Trabalho_III/Mini-Search-Engine/Exemplo_pequeno_e_simples > saida.txt
+
+run3: clean compile
+	@ ./$(PROJ_NAME) /home/thiago_lahass/Documents/TBO/Trabalho_III/Mini-Search-Engine/Exemplo_medio_grande > saida.txt
 
 clean:
 	@ rm -f *.o $(PROJ_NAME)
 
-val: clean compile
+val1: clean compile
+	@ valgrind --leak-check=full ./$(PROJ_NAME) /home/thiago_lahass/Documents/TBO/Trabalho_III/Mini-Search-Engine/Exemplo_mini
+
+val2: clean compile
 	@ valgrind --leak-check=full ./$(PROJ_NAME) /home/thiago_lahass/Documents/TBO/Trabalho_III/Mini-Search-Engine/Exemplo_pequeno_e_simples
+
+val3: clean compile
+	@ valgrind --leak-check=full ./$(PROJ_NAME) /home/thiago_lahass/Documents/TBO/Trabalho_III/Mini-Search-Engine/Exemplo_medio_grande
 
 # run1pdf: clean compile
 # 	@ ./$(PROJ_NAME) ${DIR_ENTRADA_1_PDF} ${DIR_SAIDA_1_PDF}
