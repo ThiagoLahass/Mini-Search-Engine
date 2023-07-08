@@ -2,13 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include "RBT_STRING.h"
+#include "RBT_PAGE.h"
 #include "ST.h"
+#include "PageRank.h"
 
 #define MAX_DIRNAME_SIZE 500
-#define MAX_FILENAME_SIZE 500
+#define MAX_FILENAME_SIZE 1000
 #define MAX_WORD_SIZE 500
 #define MAX_INDEX_SIZE 500
-#define MAX_PAGENAME_SIZE 500
+#define MAX_PAGENAME_SIZE 1050
 
 FILE* utility_openFile(char *nameFile, char *action);
 
@@ -90,7 +92,11 @@ int main(int argc, char* argv[]){
     FILE* index_file = utility_openFile(file_name, "r");
     // printf("%s\n", file_name);
 
+    int pages_amount = 0;
+
     while ( fscanf(index_file,"%s\n", index) == 1 ) {
+        pages_amount++;
+
         sprintf(page, "%s/pages/%s", dir, index);
         FILE* page_file = utility_openFile(page, "r");
         // printf("\n%s\n\n", page);
@@ -113,7 +119,15 @@ int main(int argc, char* argv[]){
 
     // ST_print(st);
 
+    /*=================== ALGORITMO PAGE RANK ===================*/
+    
+    sprintf(file_name, "%s/graph.txt", dir);
+    RBT_PAGE* pages = RBT_PAGE_init();
+    pages = page_rank_algorithm(pages, file_name, pages_amount);
 
+    /*================= FIM ALGORITMO PAGE RANK =================*/
+
+    RBT_PAGE_finish(pages);
     RBT_STRING_finish(stopwords);
     ST_finish(st);
 
