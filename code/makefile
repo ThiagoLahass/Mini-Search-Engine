@@ -3,9 +3,18 @@ CC_FLAGS=-c -w -Wall -g -lm
 
 # all: clean compile runAll diffAll # valAll
 
-compile: RBT_STRING RBT ST
+compile: PAGE PAGE_RANK RBT_PAGE RBT_STRING RBT ST
 	@ gcc -o $(PROJ_NAME) *.o main.c -lm 
 # -lm é usado para linkar a biblioteca math.h
+
+PAGE:
+	@ gcc -c page.c
+
+PAGE_RANK:
+	@ gcc -c PageRank.c
+
+RBT_PAGE:
+	@ gcc -c RBT_PAGE.c
 
 RBT_STRING:
 	@ gcc -c RBT_STRING.c
