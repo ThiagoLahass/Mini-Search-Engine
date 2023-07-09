@@ -2,15 +2,27 @@
 #include <stdlib.h>
 #include <string.h>
 #include "RBT_STRING.h"
+#include "RBT_PAGE.h"
 #include "ST.h"
+#include "PageRank.h"
 
 #define MAX_DIRNAME_SIZE 500
-#define MAX_FILENAME_SIZE 500
+#define MAX_FILENAME_SIZE 1000
 #define MAX_WORD_SIZE 500
 #define MAX_INDEX_SIZE 500
-#define MAX_PAGENAME_SIZE 500
+#define MAX_PAGENAME_SIZE 1050
 
 FILE* utility_openFile(char *nameFile, char *action);
+
+
+typedef struct inter {
+    char** pages;
+    int tam;
+    double* pageRank; 
+}Inter;
+
+int comp (const void * a, const void * b);
+void intersection_of_Pages(Inter* inter);
 
 int main(int argc, char* argv[]){
 
@@ -60,10 +72,10 @@ int main(int argc, char* argv[]){
     strcpy(dir, argv[1]);
     sprintf(file_name, "%s/stopwords.txt", dir);
 
-    // printf("%s\n", file_name);
-
+    // printf("%s\n\n", file_name);
+     
     FILE* stopwords_file = utility_openFile(file_name, "r");
-
+    
     while ( fscanf(stopwords_file,"%s\n", word) == 1 ) {
         // printf("%s\n", word);
         stopwords = RBT_STRING_insert(stopwords, word);
@@ -90,7 +102,11 @@ int main(int argc, char* argv[]){
     FILE* index_file = utility_openFile(file_name, "r");
     // printf("%s\n", file_name);
 
+    int pages_amount = 0;
+
     while ( fscanf(index_file,"%s\n", index) == 1 ) {
+        pages_amount++;
+
         sprintf(page, "%s/pages/%s", dir, index);
         FILE* page_file = utility_openFile(page, "r");
         // printf("\n%s\n\n", page);
@@ -113,13 +129,171 @@ int main(int argc, char* argv[]){
 
     // ST_print(st);
 
+    /*=================== ALGORITMO PAGE RANK ===================*/
+    
+    sprintf(file_name, "%s/graph.txt", dir);
+    RBT_PAGE* pages = RBT_PAGE_init();
+    pages = page_rank_algorithm(pages, file_name, pages_amount);
 
+    // RBT_PAGE_print(pages);
+    // printf("\nSIze: %d\n", RBT_PAGE_size(pages));
+
+    // RBT_PAGE_traverse(pages, page_print);
+
+    /*================= FIM ALGORITMO PAGE RANK =================*/
+
+
+    /*=================== ALGORITMO DE BUSCA ====================*/
+
+    /*  
+        1.  Buscar primeiro termo da busca na ST
+        2.  Essa busca vai retornar uma RBT_STRING que contem todas as paginas em que esse termo é encontrado
+        3.  Criar um vetor de 'Page*' do tamanho da RBT_STRING retornada (RBT_STRING_size)
+        4.  Agora, percorrer essa RBT_STRING usando a funcao RBT_STRING_traverse, que percorre a RBT_STRING em ordem crescente
+        5.  Ao percorrer a RBT_STRING, pegar cada pagina, fazer sua busca na RBT_PAGE, e adicionar essa 'Page* no vetor criado acima
+        6.  Fazer o mesmo para o segundo termo
+        7.  Criar outro vetor auxiliar, com tamanho igual ao menor vetor dos criados acima, e fazer a interseção deles (Igual o Merge)
+        8.  Buscar terceiro termo da busca (se houver) na ST
+        9.  ...
+
+        x.  Depois de ter o vetor com todas as paginas, fazer a ordenação do vetor usando qsort, por ordem decrescente de PageRank 
+    */
+    
+    sprintf(file_name, "%s/searches.txt", dir);
+
+    // printf("%s\n\n", file_name);
+     
+    FILE* searches_file = utility_openFile(file_name, "r");
+    
+    //===============================================================
+    Inter* inter = malloc(2*sizeof(Inter));
+    while(!feof(searches_file)) {
+        fscanf(searches_file,"%[^\n]\n",dir);
+        char str[MAX_WORD_SIZE]; 
+        strcpy(str,dir); //salvando as palavras pesquisadas
+        //printf("%s\n",dir);
+        char * aux = strtok(dir," ");
+        
+
+        
+        
+        int qtd=0;
+        while (aux){
+            if(qtd==0) {
+                RBT_STRING* rbt_s = ST_get(st, aux);
+                inter[0].pages = calloc(RBT_STRING_size(rbt_s),sizeof(char *));
+                RBT_STRING_traverse(rbt_s, inter[0].pages);
+                inter[0].tam=RBT_STRING_size(rbt_s);
+                qtd++; 
+            } else {
+                RBT_STRING* rbt_s = ST_get(st, aux);
+                inter[1].pages = calloc(RBT_STRING_size(rbt_s),sizeof(char *));
+                RBT_STRING_traverse(rbt_s, inter[1].pages);
+                inter[1].tam=RBT_STRING_size(rbt_s);
+
+                intersection_of_Pages(inter);
+                
+            }
+            aux = strtok(NULL," ");
+        }
+
+        
+        printf("search:%s\n",str); //Nome dos items da busca TEM QUE COLOCAR EM ORDEM DE PAGERANK 
+        inter[0].pageRank = calloc(inter[0].tam,sizeof(double));
+        for(int x=0;x<inter[0].tam;x++) {
+            //printf("%s\n", inter[0].pages[x]);
+            Page* pg = RBT_PAGE_get(pages, inter[0].pages[x]); //PEGANDO A PAGINA ATRAVES DA BUSCA
+            
+            inter[0].pageRank[x] = get_page_rank(pg); //CAPTURANDO O PAGERANK 
+           // printf("%s %f\n",inter[0].pages[x],inter[0].pageRank);
+        }
+        
+        qsort(inter[0].pages,inter[0].tam,sizeof(char **),comp); //COLOCANDO O VETOR CHAR** EM ORDEM DE PANGERANK
+
+    
+        printf("pages:");
+        for(int x=0;x<inter[0].tam;x++) {
+            printf("%s ", inter[0].pages[x]);
+        }
+
+        qsort(inter[0].pageRank,inter[0].tam,sizeof(double *),comp); //COLOCANDO O VETOR DOUBLE** EM ORDEM DE PANGERANK
+        
+        printf("\npr:");
+        for(int x=0;x<inter[0].tam;x++) {
+            printf("%f ", inter[0].pageRank[x]);
+        }
+        printf("\n");
+        printf("--------------------\n");
+    }
+
+    
+    //===============================================================
+
+    // RBT_STRING* rbt_s = ST_get(st, "gatti");
+    // Page** v_page2[RBT_STRING_size(rbt_s)];
+    // RBT_STRING_traverse(rbt_s, );
+    // Page* pg = RBT_PAGE_get(pages, nome_pagina);
+    
+    fclose(searches_file);
+
+
+    /*================= FIM ALGORITMO DE BUSCA ==================*/
+
+
+    RBT_PAGE_finish(pages);
     RBT_STRING_finish(stopwords);
     ST_finish(st);
 
     return 0;
 }
 
+int comp (const void * a, const void * b){
+    if ((*(Inter *)a).pageRank > (*(Inter *)b).pageRank ){
+        return -1;
+    }else if ((*(Inter *)a).pageRank < (*(Inter *)b).pageRank){
+        return 1;
+    }else {
+        return 0;
+    }
+}
+
+void intersection_of_Pages(Inter* inter){
+    Inter auxiliar;
+    auxiliar.tam=0;
+
+    if (inter[0].tam>=inter[1].tam) {
+        auxiliar.pages=calloc(inter[1].tam,sizeof(char *));
+        auxiliar.tam=inter[1].tam;
+    } else {
+        auxiliar.pages=calloc(inter[0].tam,sizeof(char *));
+        auxiliar.tam=inter[0].tam;
+    }
+
+    int i=0, j=0, count=0;
+    while(i<inter[0].tam && j<inter[1].tam) {
+        int cmp = strcmp(inter[0].pages[i], inter[1].pages[j]);
+
+        if(cmp == 0) {
+            auxiliar.pages[count++]=strdup(inter[0].pages[i]);
+            i++; j++;
+        } else if(cmp<0) {
+            i++;
+        } else {
+            j++;
+        }
+        
+    }
+    
+    for(int x=0;x<inter[0].tam;x++) {
+        free(inter[0].pages[x]);
+    }
+
+    inter[0].tam=count;
+
+    for(int x=0;x<inter[0].tam;x++) {
+        inter[0].pages[x]=strdup(auxiliar.pages[x]);
+    }
+}
 
 FILE* utility_openFile(char *nameFile, char *action){
     //Abrir o arquivo
@@ -133,3 +307,4 @@ FILE* utility_openFile(char *nameFile, char *action){
 
     return file; 
 }
+
