@@ -26,13 +26,13 @@ ST: RBT
 	@ gcc -c ST.c
 
 run1: clean compile
-	@ ./$(PROJ_NAME) /home/thiago_lahass/Documents/TBO/Trabalho_III/Mini-Search-Engine/Exemplo_mini
+	@ ./$(PROJ_NAME) /home/talles/b/Mini-Search-Engine/Exemplo_mini
 
 run2: clean compile
-	@ ./$(PROJ_NAME) /home/thiago_lahass/Documents/TBO/Trabalho_III/Mini-Search-Engine/Exemplo_pequeno_e_simples 
+	@ ./$(PROJ_NAME) /home/talles/b/Mini-Search-Engine/Exemplo_pequeno_e_simples 
 
 run3: clean compile
-	@ ./$(PROJ_NAME) /home/thiago_lahass/Documents/TBO/Trabalho_III/Mini-Search-Engine/Exemplo_medio_grande
+	@ ./$(PROJ_NAME) /home/talles/b/Mini-Search-Engine/Exemplo_medio_grande
 
 clean:
 	@ rm -f *.o $(PROJ_NAME)

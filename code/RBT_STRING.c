@@ -3,12 +3,15 @@
 #include <math.h>
 #include "string.h"
 #include "RBT_STRING.h"
+#include "RBT_PAGE.h"
 
 #define NULL_Value ((int)NULL)
 #define NULL_Key ((char*)NULL)
 
 #define RED     true
 #define BLACK   false
+
+
 
 struct node {
     Key_s key;          // Sorted by key.
@@ -292,17 +295,19 @@ int RBT_STRING_rank(RBT_STRING* rbt, Key_s key) {
 }
 
 
-static void rec_traverse(RBT_STRING *rbt, void (*visit)(RBT_STRING*)) {
+static void rec_traverse(RBT_STRING* rbt, char ** pag,int * global ) {
     if (rbt == NULL) {
         return;
     }
-    rec_traverse(rbt->l, visit);
-    visit(rbt);
-    rec_traverse(rbt->r, visit);
+    rec_traverse(rbt->l, pag,global);
+    pag[(*global)++] = strdup(rbt->key);
+    rec_traverse(rbt->r, pag,global);
 }
 
-void RBT_STRING_traverse(RBT_STRING* rbt, void (*visit)(RBT_STRING*)) {
-    rec_traverse(rbt, visit);
+void RBT_STRING_traverse(RBT_STRING* rbt, char ** pag) {
+    int global = 0;
+    rec_traverse(rbt, pag, &global);
+
 }
 
 void RBT_STRING_print(RBT_STRING* rbt){

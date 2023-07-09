@@ -14,6 +14,12 @@
 
 FILE* utility_openFile(char *nameFile, char *action);
 
+typedef struct inter {
+    char** pages;
+    int tam;
+}Inter;
+
+
 int main(int argc, char* argv[]){
 
     /*
@@ -62,10 +68,10 @@ int main(int argc, char* argv[]){
     strcpy(dir, argv[1]);
     sprintf(file_name, "%s/stopwords.txt", dir);
 
-    // printf("%s\n", file_name);
-
+    // printf("%s\n\n", file_name);
+     
     FILE* stopwords_file = utility_openFile(file_name, "r");
-
+    
     while ( fscanf(stopwords_file,"%s\n", word) == 1 ) {
         // printf("%s\n", word);
         stopwords = RBT_STRING_insert(stopwords, word);
@@ -148,27 +154,92 @@ int main(int argc, char* argv[]){
 
         x.  Depois de ter o vetor com todas as paginas, fazer a ordenação do vetor usando qsort, por ordem decrescente de PageRank 
     */
+    
+    sprintf(file_name, "%s/searches.txt", dir);
 
-    // RBT_STRING* rbt_s = ST_get(st, "thiago");
-    // Page** v_page1[RBT_STRING_size(rbt_s)];
-    // RBT_STRING_traverse(rbt_s, );
-    // Page* pg = RBT_PAGE_get(pages, nome_pagina);
+    // printf("%s\n\n", file_name);
+     
+    FILE* searches_file = utility_openFile(file_name, "r");
+    //===============================================================
+    while(!feof(searches_file)) {
+        fscanf(searches_file,"%[^\n]\n",dir);
+        //printf("%s\n",dir);
+        char * aux = strtok(dir," ");
+        
+        // RBT_STRING* rbt_s = ST_get(st, aux); //retorna a arvore que em cada nó contem a pagina que possui o nome thiago
+        // char ** pag1 = calloc(RBT_STRING_size(rbt_s),sizeof(char *)); //paginas
+        // RBT_STRING_traverse(rbt_s, pag1);
 
-    // RBT_STRING* rbt_s = ST_get(st, "shape");
-    // Page** v_page2[RBT_STRING_size(rbt_s)];
-    // RBT_STRING_traverse(rbt_s, );
-    // Page* pg = RBT_PAGE_get(pages, nome_pagina);
 
 
-    // Page** v_interseção[minimo entre tamanho v1 e v2];
+        Inter* inter = malloc(2*sizeof(Inter));
+        //Inter inter[2];
+        int qtd=0;
+        while (aux){
+            if(qtd==0) {
+                RBT_STRING* rbt_s = ST_get(st, aux);
+                inter[0].pages = calloc(RBT_STRING_size(rbt_s),sizeof(char *));
+                RBT_STRING_traverse(rbt_s, inter[0].pages);
+                inter[0].tam=RBT_STRING_size(rbt_s);
+                qtd++; 
+            } else {
+                RBT_STRING* rbt_s = ST_get(st, aux);
+                inter[1].pages = calloc(RBT_STRING_size(rbt_s),sizeof(char *));
+                RBT_STRING_traverse(rbt_s, inter[1].pages);
+                inter[1].tam=RBT_STRING_size(rbt_s);
 
+                Inter auxiliar;
+                auxiliar.tam=0;
+
+                if (inter[0].tam>=inter[1].tam) {
+                    auxiliar.pages=calloc(inter[1].tam,sizeof(char *));
+                    auxiliar.tam=inter[1].tam;
+                } else {
+                    auxiliar.pages=calloc(inter[0].tam,sizeof(char *));
+                    auxiliar.tam=inter[0].tam;
+                }
+
+                int i=0, j=0, count=0;
+                while(i<inter[0].tam && j<inter[1].tam) {
+                    int cmp = strcmp(inter[0].pages[i], inter[1].pages[j]);
+
+                    if(cmp == 0) {
+                        auxiliar.pages[count++]=strdup(inter[0].pages[i]);
+                        i++; j++;
+                    } else if(cmp<0) {
+                        i++;
+                    } else {
+                        j++;
+                    }
+                    
+                }
+                
+                for(int x=0;x<inter[0].tam;x++) {
+                    free(inter[0].pages[x]);
+                }
+
+                inter[0].tam=count;
+
+                for(int x=0;x<inter[0].tam;x++) {
+                    inter[0].pages[x]=strdup(auxiliar.pages[x]);
+                }
+            }
+            aux = strtok(NULL," ");
+        }
+
+        for(int x=0;x<inter[0].tam;x++) {
+            printf("%s\n", inter[0].pages[x]);
+        }
+        printf("--------------------\n");
+    }
+    //===============================================================
 
     // RBT_STRING* rbt_s = ST_get(st, "gatti");
     // Page** v_page2[RBT_STRING_size(rbt_s)];
     // RBT_STRING_traverse(rbt_s, );
     // Page* pg = RBT_PAGE_get(pages, nome_pagina);
 
-
+    fclose(searches_file);
 
 
     /*================= FIM ALGORITMO DE BUSCA ==================*/
@@ -193,4 +264,8 @@ FILE* utility_openFile(char *nameFile, char *action){
     }
 
     return file; 
+}
+
+void intersecao() {
+
 }

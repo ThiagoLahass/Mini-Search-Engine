@@ -33,6 +33,7 @@ void ST_put(ST* st, Key key, Value val){
 }
 
 RBT_STRING* ST_get(ST* st, Key key) {
+    //RBT_print(st->rbt);
     return RBT_get(st->rbt, key);
 }
 
