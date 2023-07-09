@@ -26,25 +26,25 @@ ST: RBT
 	@ gcc -c ST.c
 
 run1: clean compile
-	@ ./$(PROJ_NAME) /home/bruno/Documentos/ProgC/TBO/Mini-Search-Engine-talles/Exemplo_mini
+	@ ./$(PROJ_NAME) ../Exemplo_mini
 
 run2: clean compile
-	@ ./$(PROJ_NAME) /home/bruno/Documentos/ProgC/TBO/Mini-Search-Engine-talles/Exemplo_pequeno_e_simples 
+	@ ./$(PROJ_NAME) ../Exemplo_pequeno_e_simples 
 
 run3: clean compile
-	@ ./$(PROJ_NAME) /home/bruno/Documentos/ProgC/TBO/Mini-Search-Engine-talles/Exemplo_medio_grande
+	@ ./$(PROJ_NAME) ../Exemplo_medio_grande
 
 clean:
 	@ rm -f *.o $(PROJ_NAME)
 
 val1: clean compile
-	@ valgrind --leak-check=full ./$(PROJ_NAME) /home/bruno/Documentos/ProgC/TBO/Mini-Search-Engine-talles/Exemplo_mini
+	@ valgrind --leak-check=full ./$(PROJ_NAME) ../Exemplo_mini
 
 val2: clean compile
-	@ valgrind --leak-check=full ./$(PROJ_NAME) /home/thiago_lahass/Documents/TBO/Trabalho_III/Mini-Search-Engine/Exemplo_pequeno_e_simples
+	@ valgrind --leak-check=full ./$(PROJ_NAME) ../Exemplo_pequeno_e_simples
 
 val3: clean compile
-	@ valgrind --leak-check=full ./$(PROJ_NAME) /home/thiago_lahass/Documents/TBO/Trabalho_III/Mini-Search-Engine/Exemplo_medio_grande
+	@ valgrind --leak-check=full ./$(PROJ_NAME) ../Exemplo_medio_grande
 
 # run1pdf: clean compile
 # 	@ ./$(PROJ_NAME) ${DIR_ENTRADA_1_PDF} ${DIR_SAIDA_1_PDF}
