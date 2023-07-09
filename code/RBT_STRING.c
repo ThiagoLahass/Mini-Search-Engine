@@ -292,17 +292,18 @@ int RBT_STRING_rank(RBT_STRING* rbt, Key_s key) {
 }
 
 
-static void rec_traverse(RBT_STRING *rbt, void (*visit)(RBT_STRING*)) {
+static void rec_traverse(RBT_STRING *rbt, char** v_pages, int* index) {
     if (rbt == NULL) {
         return;
     }
-    rec_traverse(rbt->l, visit);
-    visit(rbt);
-    rec_traverse(rbt->r, visit);
+    rec_traverse(rbt->l, v_pages, index);
+    v_pages[(*index)++] = rbt->key;
+    rec_traverse(rbt->r, v_pages, index);
 }
 
-void RBT_STRING_traverse(RBT_STRING* rbt, void (*visit)(RBT_STRING*)) {
-    rec_traverse(rbt, visit);
+void RBT_STRING_traverse(RBT_STRING* rbt, char** v_pages) {
+    int aux = 0;
+    rec_traverse(rbt, v_pages, &aux);
 }
 
 void RBT_STRING_print(RBT_STRING* rbt){

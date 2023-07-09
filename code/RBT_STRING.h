@@ -44,7 +44,7 @@ Key_s RBT_STRING_ceiling(RBT_STRING* st, Key_s key);
 int RBT_STRING_rank(RBT_STRING* st, Key_s key);
 
 // Visit all the key-value pairs in the order of their keys.
-void RBT_STRING_traverse(RBT_STRING* st, void (*visit)(RBT_STRING*));
+void RBT_STRING_traverse(RBT_STRING* rbt, char** v_pages);
 
 // Print RBT
 void RBT_STRING_print(RBT_STRING* st);

@@ -149,10 +149,13 @@ int main(int argc, char* argv[]){
         x.  Depois de ter o vetor com todas as paginas, fazer a ordenação do vetor usando qsort, por ordem decrescente de PageRank 
     */
 
-    // RBT_STRING* rbt_s = ST_get(st, "thiago");
-    // Page** v_page1[RBT_STRING_size(rbt_s)];
-    // RBT_STRING_traverse(rbt_s, );
-    // Page* pg = RBT_PAGE_get(pages, nome_pagina);
+    RBT_STRING* rbt_s = ST_get(st, "abacate");
+    char* v_page1[RBT_STRING_size(rbt_s)];
+    RBT_STRING_traverse(rbt_s, v_page1);
+
+    for(int i = 0; i < RBT_STRING_size(rbt_s); i++ ){
+        printf("%s\n", v_page1[i]);
+    }
 
     // RBT_STRING* rbt_s = ST_get(st, "shape");
     // Page** v_page2[RBT_STRING_size(rbt_s)];
