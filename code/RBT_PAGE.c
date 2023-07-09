@@ -185,3 +185,27 @@ static RBT_PAGE* rec_libera(RBT_PAGE* rbt){
 void RBT_PAGE_finish(RBT_PAGE* rbt){
     rbt = rec_libera(rbt);
 }
+
+void RBT_PAGE_print(RBT_PAGE* rbt){
+    printf("< ");
+    if( rbt != NULL ){
+        printf("%s", rbt->key);
+        printf(" pg = %.8f", get_page_rank(rbt->val));
+        RBT_PAGE_print(rbt->l);
+        RBT_PAGE_print(rbt->r);
+    }
+    printf("> ");
+}
+
+static void rec_traverse(RBT_PAGE *rbt, void (*visit)(Page*)) {
+    if (rbt == NULL) {
+        return;
+    }
+    rec_traverse(rbt->l, visit);
+    visit(rbt->val);
+    rec_traverse(rbt->r, visit);
+}
+
+void RBT_PAGE_traverse(RBT_PAGE* rbt, void (*visit)(Page*)) {
+    rec_traverse(rbt, visit);
+}

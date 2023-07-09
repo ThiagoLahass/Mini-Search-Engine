@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "page.h"
 
@@ -106,4 +107,8 @@ void destruct_page(Page *page)
     if(page->influenced_pages_amount != 0)
         free(page->influenced_pages);
     free(page);
+}
+
+void page_print(Page* page){
+    printf("%-15s, pg = %f\n", page->name, page->page_rank);
 }

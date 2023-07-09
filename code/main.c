@@ -125,7 +125,54 @@ int main(int argc, char* argv[]){
     RBT_PAGE* pages = RBT_PAGE_init();
     pages = page_rank_algorithm(pages, file_name, pages_amount);
 
+    // RBT_PAGE_print(pages);
+    // printf("\nSIze: %d\n", RBT_PAGE_size(pages));
+
+    // RBT_PAGE_traverse(pages, page_print);
+
     /*================= FIM ALGORITMO PAGE RANK =================*/
+
+
+    /*=================== ALGORITMO DE BUSCA ====================*/
+
+    /*  
+        1.  Buscar primeiro termo da busca na ST
+        2.  Essa busca vai retornar uma RBT_STRING que contem todas as paginas em que esse termo é encontrado
+        3.  Criar um vetor de 'Page*' do tamanho da RBT_STRING retornada (RBT_STRING_size)
+        4.  Agora, percorrer essa RBT_STRING usando a funcao RBT_STRING_traverse, que percorre a RBT_STRING em ordem crescente
+        5.  Ao percorrer a RBT_STRING, pegar cada pagina, fazer sua busca na RBT_PAGE, e adicionar essa 'Page* no vetor criado acima
+        6.  Fazer o mesmo para o segundo termo
+        7.  Criar outro vetor auxiliar, com tamanho igual ao menor vetor dos criados acima, e fazer a interseção deles (Igual o Merge)
+        8.  Buscar terceiro termo da busca (se houver) na ST
+        9.  ...
+
+        x.  Depois de ter o vetor com todas as paginas, fazer a ordenação do vetor usando qsort, por ordem decrescente de PageRank 
+    */
+
+    // RBT_STRING* rbt_s = ST_get(st, "thiago");
+    // Page** v_page1[RBT_STRING_size(rbt_s)];
+    // RBT_STRING_traverse(rbt_s, );
+    // Page* pg = RBT_PAGE_get(pages, nome_pagina);
+
+    // RBT_STRING* rbt_s = ST_get(st, "shape");
+    // Page** v_page2[RBT_STRING_size(rbt_s)];
+    // RBT_STRING_traverse(rbt_s, );
+    // Page* pg = RBT_PAGE_get(pages, nome_pagina);
+
+
+    // Page** v_interseção[minimo entre tamanho v1 e v2];
+
+
+    // RBT_STRING* rbt_s = ST_get(st, "gatti");
+    // Page** v_page2[RBT_STRING_size(rbt_s)];
+    // RBT_STRING_traverse(rbt_s, );
+    // Page* pg = RBT_PAGE_get(pages, nome_pagina);
+
+
+
+
+    /*================= FIM ALGORITMO DE BUSCA ==================*/
+
 
     RBT_PAGE_finish(pages);
     RBT_STRING_finish(stopwords);
