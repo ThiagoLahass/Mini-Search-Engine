@@ -35,4 +35,6 @@ void destruct_page(Page* page);
 
 void page_print(Page* page);
 
+void sort_pages_by_page_rank(Page** v_pages, int tam_v_pages);
+
 #endif /* PAGE_H */

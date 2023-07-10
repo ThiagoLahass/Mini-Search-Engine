@@ -3,6 +3,8 @@
 #include <string.h>
 #include "page.h"
 
+int compare_page_rank(const void * a, const void * b);
+
 struct page
 {
     char* name;
@@ -111,4 +113,27 @@ void destruct_page(Page *page)
 
 void page_print(Page* page){
     printf("%-15s, pg = %f\n", page->name, page->page_rank);
+}
+
+void sort_pages_by_page_rank(Page** v_pages, int tam_v_pages){
+    qsort(v_pages, tam_v_pages, sizeof(Page*), compare_page_rank);
+}
+
+int compare_page_rank(const void * a, const void * b){
+    // Converter os void pointer para o tipo apropriado
+    const Page* page1 = *(const Page**)a;
+    const Page* page2 = *(const Page**)b;
+
+    double pagerank1 = page1->page_rank;
+    double pagerank2 = page2->page_rank;
+
+    // Comparação decrescente de page rank
+    if (pagerank1 < pagerank2) {
+        return 1;
+    } else if (pagerank1 > pagerank2) {
+        return -1;
+    } else {
+        // Em caso de empate, ordem lexicográfica da string
+        return strcmp(page1->name, page2->name);
+    }
 }

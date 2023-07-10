@@ -13,25 +13,6 @@
 #define MAX_PAGENAME_SIZE 1050
 #define MAX_SEARCH_SIZE 1000
 
-int compare_pagerank(const void * a, const void * b){
-    double pagerank1 = get_page_rank((Page*)a);
-    double pagerank2 = get_page_rank((Page*)b);
-
-    printf("\npagerank1 = %f\n", pagerank1);
-    printf("\npagerank2 = %f\n", pagerank2);
-
-    // Comparação decrescente de page rank
-    if (pagerank1 < pagerank2) {
-        return 1;
-    } else if (pagerank1 > pagerank2) {
-        return -1;
-    } else {
-        // Em caso de empate, ordem lexicográfica da string
-        printf("\n\nteste\n\n");
-        return strcmp(get_page_name((Page*)a), get_page_name((Page*)b));
-    }
-}
-
 FILE* utility_openFile(char *nameFile, char *action);
 int intersection_of_Pages(char **vetor1, int tam1, char **vetor2, int tam2);
 
@@ -186,7 +167,7 @@ int main(int argc, char* argv[]){
         int tam_vetor_intersecao = 0;
         char** v_intersecao_pages;
         
-        if( (aux = strtok(search," ")) != NULL ){               // Pega primeiro termo da pesquisa
+        if( (aux = strtok(search," ")) != NULL ){                               // Pega primeiro termo da pesquisa
             
             // Se o termo buscado for uma stopword, devemos ignora-la
             while ( RBT_STRING_contains(stopwords, aux) ){
@@ -215,31 +196,15 @@ int main(int argc, char* argv[]){
         }
 
         // Vetor em que sera salvo as pages das intersecoes
-        // printf("tam = %d\n", tam_vetor_intersecao);
         Page* v_pages[tam_vetor_intersecao];
 
         for(int i = 0; i < tam_vetor_intersecao; i++){
             v_pages[i] = RBT_PAGE_get(pages, v_intersecao_pages[i]);
         }
-
         free(v_intersecao_pages);
-
-        printf("%ld / %ld = %ld\n", sizeof(v_pages), sizeof(Page*), sizeof(v_pages)/sizeof(Page*));
-
-        for(int i = 0; i < tam_vetor_intersecao; i++){
-            printf("%s %f  ", get_page_name(v_pages[i]), get_page_rank(v_pages[i]));
-        }
-        printf("\n");
         
-        //Ordenar em ordem decrescente de pagerank, lexografica como desempate
-        qsort(v_pages, tam_vetor_intersecao, sizeof(Page*), compare_pagerank);
-
-        printf("%ld / %ld = %ld\n", sizeof(v_pages), sizeof(Page*), sizeof(v_pages)/sizeof(Page*));
-
-        for(int i = 0; i < tam_vetor_intersecao; i++){
-            printf("%s %f  ", get_page_name(v_pages[i]), get_page_rank(v_pages[i]));
-        }
-        printf("\n");
+        // Ordenar Pages por page rank
+        sort_pages_by_page_rank(v_pages, tam_vetor_intersecao);
 
         printf("search:%s\n",search_aux);
 
