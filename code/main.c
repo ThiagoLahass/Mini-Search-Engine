@@ -11,18 +11,29 @@
 #define MAX_WORD_SIZE 500
 #define MAX_INDEX_SIZE 500
 #define MAX_PAGENAME_SIZE 1050
+#define MAX_SEARCH_SIZE 1000
+
+int compare_pagerank(const void * a, const void * b){
+    double pagerank1 = get_page_rank((Page*)a);
+    double pagerank2 = get_page_rank((Page*)b);
+
+    printf("\npagerank1 = %f\n", pagerank1);
+    printf("\npagerank2 = %f\n", pagerank2);
+
+    // Comparação decrescente de page rank
+    if (pagerank1 < pagerank2) {
+        return 1;
+    } else if (pagerank1 > pagerank2) {
+        return -1;
+    } else {
+        // Em caso de empate, ordem lexicográfica da string
+        printf("\n\nteste\n\n");
+        return strcmp(get_page_name((Page*)a), get_page_name((Page*)b));
+    }
+}
 
 FILE* utility_openFile(char *nameFile, char *action);
-
-
-typedef struct inter {
-    char** pages;
-    int tam;
-    double* pageRank; 
-}Inter;
-
-int comp (const void * a, const void * b);
-void intersection_of_Pages(Inter* inter);
+int intersection_of_Pages(char **vetor1, int tam1, char **vetor2, int tam2);
 
 int main(int argc, char* argv[]){
 
@@ -160,85 +171,94 @@ int main(int argc, char* argv[]){
     */
     
     sprintf(file_name, "%s/searches.txt", dir);
-
-    // printf("%s\n\n", file_name);
-     
-    FILE* searches_file = utility_openFile(file_name, "r");
     
-    //===============================================================
-    Inter* inter = malloc(2*sizeof(Inter));
-    while(!feof(searches_file)) {
-        fscanf(searches_file,"%[^\n]\n",dir);
-        char str[MAX_WORD_SIZE]; 
-        strcpy(str,dir); //salvando as palavras pesquisadas
-        //printf("%s\n",dir);
-        char * aux = strtok(dir," ");
-        
+    char search[MAX_SEARCH_SIZE];
+    char search_aux[MAX_SEARCH_SIZE];
 
+    while(fgets(search, MAX_SEARCH_SIZE, stdin) != NULL) {
+        // Removendo o caractere nova linha ('\n') do final do comando e substitui por \0
+        search[strcspn(search, "\n")] = '\0';
+        // Salvar vetor original do search para imprimir posteriormente
+        strcpy(search_aux, search);
         
+        char str[MAX_WORD_SIZE];
+        char * aux;
+        int tam_vetor_intersecao = 0;
+        char** v_intersecao_pages;
         
-        int qtd=0;
-        while (aux){
-            if(qtd==0) {
-                RBT_STRING* rbt_s = ST_get(st, aux);
-                inter[0].pages = calloc(RBT_STRING_size(rbt_s),sizeof(char *));
-                RBT_STRING_traverse(rbt_s, inter[0].pages);
-                inter[0].tam=RBT_STRING_size(rbt_s);
-                qtd++; 
-            } else {
-                RBT_STRING* rbt_s = ST_get(st, aux);
-                inter[1].pages = calloc(RBT_STRING_size(rbt_s),sizeof(char *));
-                RBT_STRING_traverse(rbt_s, inter[1].pages);
-                inter[1].tam=RBT_STRING_size(rbt_s);
-
-                intersection_of_Pages(inter);
-                
-            }
-            aux = strtok(NULL," ");
-        }
-
-        
-        printf("search:%s\n",str); //Nome dos items da busca TEM QUE COLOCAR EM ORDEM DE PAGERANK 
-        inter[0].pageRank = calloc(inter[0].tam,sizeof(double));
-        for(int x=0;x<inter[0].tam;x++) {
-            //printf("%s\n", inter[0].pages[x]);
-            Page* pg = RBT_PAGE_get(pages, inter[0].pages[x]); //PEGANDO A PAGINA ATRAVES DA BUSCA
+        if( (aux = strtok(search," ")) != NULL ){               // Pega primeiro termo da pesquisa
             
-            inter[0].pageRank[x] = get_page_rank(pg); //CAPTURANDO O PAGERANK 
-           // printf("%s %f\n",inter[0].pages[x],inter[0].pageRank);
-        }
-        
-        qsort(inter[0].pages,inter[0].tam,sizeof(char **),comp); //COLOCANDO O VETOR CHAR** EM ORDEM DE PANGERANK
+            // Se o termo buscado for uma stopword, devemos ignora-la
+            while ( RBT_STRING_contains(stopwords, aux) ){
+                if( (aux = strtok(NULL," ")) == NULL) break;
+            }
 
-    
-        printf("pages:");
-        for(int x=0;x<inter[0].tam;x++) {
-            printf("%s ", inter[0].pages[x]);
+            RBT_STRING* rbt_s = ST_get(st, aux);                                // Busca a RBT de paginas que contem aquele termo  
+            tam_vetor_intersecao = RBT_STRING_size(rbt_s);                      // Pega a quantidade de paginas para criar um vetor desse tamanho
+            v_intersecao_pages = calloc(tam_vetor_intersecao, sizeof(char*));   // Cria um vetor para podermos salvar os NOMES das paginas
+            RBT_STRING_traverse(rbt_s, v_intersecao_pages);                     // Percorre a RBT e salva os nomes das paginas no vetor acima
+        
+            while ( (aux = strtok(NULL," ")) != NULL ){                         // Enquanto houverem termos na linha
+                if( RBT_STRING_contains(stopwords, aux) ){                      // Se for uma stopword, ignorar
+                    continue;
+                }
+                RBT_STRING* rbt_s2 = ST_get(st, aux);                           // Mesmo procedimento visto acima
+                int tam_vetor_2 = RBT_STRING_size(rbt_s2);
+                char* v_pages_2[tam_vetor_2];
+                RBT_STRING_traverse(rbt_s2, v_pages_2);
+
+                // Calculamos a interseção entre os dois vetores
+                // Atualizamos a quantidade de paginas na interseção
+                tam_vetor_intersecao = intersection_of_Pages(v_intersecao_pages, tam_vetor_intersecao, v_pages_2, tam_vetor_2);
+            }
+
         }
 
-        qsort(inter[0].pageRank,inter[0].tam,sizeof(double *),comp); //COLOCANDO O VETOR DOUBLE** EM ORDEM DE PANGERANK
-        
-        printf("\npr:");
-        for(int x=0;x<inter[0].tam;x++) {
-            printf("%f ", inter[0].pageRank[x]);
+        // Vetor em que sera salvo as pages das intersecoes
+        // printf("tam = %d\n", tam_vetor_intersecao);
+        Page* v_pages[tam_vetor_intersecao];
+
+        for(int i = 0; i < tam_vetor_intersecao; i++){
+            v_pages[i] = RBT_PAGE_get(pages, v_intersecao_pages[i]);
+        }
+
+        free(v_intersecao_pages);
+
+        printf("%ld / %ld = %ld\n", sizeof(v_pages), sizeof(Page*), sizeof(v_pages)/sizeof(Page*));
+
+        for(int i = 0; i < tam_vetor_intersecao; i++){
+            printf("%s %f  ", get_page_name(v_pages[i]), get_page_rank(v_pages[i]));
         }
         printf("\n");
-        printf("--------------------\n");
+        
+        //Ordenar em ordem decrescente de pagerank, lexografica como desempate
+        qsort(v_pages, tam_vetor_intersecao, sizeof(Page*), compare_pagerank);
+
+        printf("%ld / %ld = %ld\n", sizeof(v_pages), sizeof(Page*), sizeof(v_pages)/sizeof(Page*));
+
+        for(int i = 0; i < tam_vetor_intersecao; i++){
+            printf("%s %f  ", get_page_name(v_pages[i]), get_page_rank(v_pages[i]));
+        }
+        printf("\n");
+
+        printf("search:%s\n",search_aux);
+
+        printf("pages:");
+        for(int i = 0; i < tam_vetor_intersecao; i++){
+            printf("%s", get_page_name(v_pages[i]));
+            if(i < tam_vetor_intersecao-1)
+                printf(" ");
+        }
+
+        printf("\npr:");
+        for(int i = 0; i < tam_vetor_intersecao; i++){
+            printf("%f", get_page_rank(v_pages[i]));
+            if(i < tam_vetor_intersecao-1)
+                printf(" ");
+        }
+        printf("\n");
     }
-
-    
-    //===============================================================
-
-    // RBT_STRING* rbt_s = ST_get(st, "gatti");
-    // Page** v_page2[RBT_STRING_size(rbt_s)];
-    // RBT_STRING_traverse(rbt_s, );
-    // Page* pg = RBT_PAGE_get(pages, nome_pagina);
-    
-    fclose(searches_file);
-
-
     /*================= FIM ALGORITMO DE BUSCA ==================*/
-
 
     RBT_PAGE_finish(pages);
     RBT_STRING_finish(stopwords);
@@ -247,53 +267,32 @@ int main(int argc, char* argv[]){
     return 0;
 }
 
-int comp (const void * a, const void * b){
-    if ((*(Inter *)a).pageRank > (*(Inter *)b).pageRank ){
-        return -1;
-    }else if ((*(Inter *)a).pageRank < (*(Inter *)b).pageRank){
-        return 1;
-    }else {
-        return 0;
-    }
-}
 
-void intersection_of_Pages(Inter* inter){
-    Inter auxiliar;
-    auxiliar.tam=0;
-
-    if (inter[0].tam>=inter[1].tam) {
-        auxiliar.pages=calloc(inter[1].tam,sizeof(char *));
-        auxiliar.tam=inter[1].tam;
-    } else {
-        auxiliar.pages=calloc(inter[0].tam,sizeof(char *));
-        auxiliar.tam=inter[0].tam;
-    }
-
-    int i=0, j=0, count=0;
-    while(i<inter[0].tam && j<inter[1].tam) {
-        int cmp = strcmp(inter[0].pages[i], inter[1].pages[j]);
-
-        if(cmp == 0) {
-            auxiliar.pages[count++]=strdup(inter[0].pages[i]);
-            i++; j++;
-        } else if(cmp<0) {
-            i++;
-        } else {
-            j++;
-        }
-        
-    }
+int intersection_of_Pages(char **vetor1, int tam1, char **vetor2, int tam2) {
+    int index1 = 0; // Índice para percorrer o vetor1
+    int index2 = 0; // Índice para percorrer o vetor2
+    int intersectionIndex = 0; // Índice para preencher o vetor1 com a interseção
+    int intersectionCounter = 0; // Contador para armazenar a quantidade de elementos na interseção
     
-    for(int x=0;x<inter[0].tam;x++) {
-        free(inter[0].pages[x]);
+    // Percorre os vetores enquanto houver elementos em ambos
+    while (index1 < tam1 && index2 < tam2) {
+        int com = strcmp(vetor1[index1], vetor2[index2]);
+        
+        if (com < 0) {
+            index1++; // O elemento em vetor1 é menor, avança o índice em vetor1
+        } else if (com > 0) {
+            index2++; // O elemento em vetor2 é menor, avança o índice em vetor2
+        } else {
+            // Encontrou um elemento em comum (interseção)
+            vetor1[intersectionIndex++] = vetor1[index1]; // Adiciona no vetor1 (sobrescrevendo)
+            index1++; // Avança o índice em ambos os vetores
+            index2++;
+            intersectionCounter++; // Incrementa o contador de interseção
+        }
     }
-
-    inter[0].tam=count;
-
-    for(int x=0;x<inter[0].tam;x++) {
-        inter[0].pages[x]=strdup(auxiliar.pages[x]);
-    }
+    return intersectionCounter;
 }
+
 
 FILE* utility_openFile(char *nameFile, char *action){
     //Abrir o arquivo

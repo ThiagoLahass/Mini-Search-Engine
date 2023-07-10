@@ -27,6 +27,7 @@ ST: RBT
 
 run1: clean compile
 	@ ./$(PROJ_NAME) ../Exemplo_mini
+	# @ ./$(PROJ_NAME) ../Exemplo_mini < ../Exemplo_mini/searches.txt
 
 run2: clean compile
 	@ ./$(PROJ_NAME) ../Exemplo_pequeno_e_simples 

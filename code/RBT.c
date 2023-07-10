@@ -4,9 +4,6 @@
 #include <math.h>
 #include "RBT.h"
 
-#define NULL_Key ((char*)NULL)
-#define NULL_Value ((RBT_STRING*)NULL)
-
 #define RED     true
 #define BLACK   false
 
@@ -150,7 +147,7 @@ RBT* RBT_insert(RBT *rbt, Key key, Value val) {
 
 static RBT_STRING* rec_get(RBT *rbt, Key key) {
     if (rbt == NULL) {
-        return NULL_Value;
+        return NULL;
     }
     int cmp = compare(key, rbt->key);
     if (cmp < 0) {
@@ -169,7 +166,7 @@ RBT_STRING* RBT_get(RBT* rbt, Key key) {
 }
 
 bool RBT_contains(RBT* rbt, Key key){
-    return rec_get(rbt, key) != NULL_Value;
+    return rec_get(rbt, key) != NULL;
 }
 
 
@@ -242,7 +239,7 @@ static RBT* rec_floor(RBT *rbt, Key key) {
 Key RBT_floor(RBT* rbt, Key key) {
     RBT *n = rec_floor(rbt, key);
     if (n == NULL) {
-        return NULL_Key;
+        return NULL;
     }
     else{ 
         return n->key;
@@ -273,7 +270,7 @@ static RBT* rec_ceiling(RBT *rbt, Key key) {
 Key RBT_ceiling(RBT* rbt, Key key) {
     RBT *n = rec_ceiling(rbt, key);
     if (n == NULL) {
-        return NULL_Key;
+        return NULL;
     }
     else{ 
         return n->key;
