@@ -5,8 +5,7 @@
 
 int compare_page_rank(const void * a, const void * b);
 
-struct page
-{
+struct page {
     char* name;
     double prev_page_rank;
     double page_rank;
@@ -16,8 +15,7 @@ struct page
     int current_index_influenced_pages;
 };
 
-Page *init_page(char *name, double page_rank, int outgoing_links_amount)
-{
+Page* init_page(char *name, double page_rank, int outgoing_links_amount) {
     Page* new = malloc(sizeof(Page));
     new->name = strdup(name);
     new->prev_page_rank = 0;
@@ -30,77 +28,63 @@ Page *init_page(char *name, double page_rank, int outgoing_links_amount)
     return new;
 }
 
-char *get_page_name(Page *page)
-{
+char* get_page_name(Page *page) {
     return page->name;
 }
 
-double get_prev_page_rank(Page *page)
-{
+double get_prev_page_rank(Page *page) {
     return page->prev_page_rank;
 }
 
-void set_page_rank(Page *page, double page_rank)
-{
+void set_page_rank(Page *page, double page_rank) {
     page->page_rank = page_rank;
 }
 
-void set_prev_page_rank(Page *page)
-{
+void set_prev_page_rank(Page *page) {
     page->prev_page_rank = get_page_rank(page);
 }
 
-void increment_influenced_pages_amount(Page *page)
-{
+void increment_influenced_pages_amount(Page *page) {
     page->influenced_pages_amount++;
 }
 
-void increment_current_index_influenced_pages(Page *page)
-{
+void increment_current_index_influenced_pages(Page *page) {
     page->current_index_influenced_pages++;
 }
 
-double get_page_rank(Page *page)
-{
+double get_page_rank(Page *page) {
     return page->page_rank;
 }
 
-int get_influenced_pages_amount(Page *page)
-{
+int get_influenced_pages_amount(Page *page) {
     return page->influenced_pages_amount;
 }
 
-int get_current_index_influenced_pages(Page *page)
-{
+int get_current_index_influenced_pages(Page *page) {
     return page->current_index_influenced_pages;
 }
 
-char *get_influenced_page(Page *page, int index)
-{
+char* get_influenced_page(Page *page, int index) {
     if(page->influenced_pages_amount != 0)
         return page->influenced_pages[index];
     else
         return NULL;
 }
 
-int get_outgoing_links_amount(Page *page)
-{
+int get_outgoing_links_amount(Page *page) {
     return page->outgoing_links_amount;
 }
 
-void init_influenced_pages(Page *page)
-{
+void init_influenced_pages(Page *page) {
     if(page->influenced_pages_amount != 0)
         page->influenced_pages = calloc(page->influenced_pages_amount, sizeof(char*));
 }
 
-void add_influenced_page(Page *page, char* page_name)
-{
+void add_influenced_page(Page *page, char* page_name) {
     page->influenced_pages[page->current_index_influenced_pages] = strdup(page_name);
 }
 
-void destruct_page(Page *page)
-{
+void destruct_page(Page *page) {
     free(page->name);
     int i = 0;
     for(i = 0; i < page->influenced_pages_amount; i++){
@@ -111,16 +95,12 @@ void destruct_page(Page *page)
     free(page);
 }
 
-void page_print(Page* page){
-    printf("%-15s, pg = %f\n", page->name, page->page_rank);
-}
-
-void sort_pages_by_page_rank(Page** v_pages, int tam_v_pages){
+void sort_pages_by_page_rank(Page** v_pages, int tam_v_pages) {
     qsort(v_pages, tam_v_pages, sizeof(Page*), compare_page_rank);
 }
 
-int compare_page_rank(const void * a, const void * b){
-    // Converter os void pointer para o tipo apropriado
+int compare_page_rank(const void * a, const void * b) {
+    // Converter os void pointers para o tipo apropriado
     const Page* page1 = *(const Page**)a;
     const Page* page2 = *(const Page**)b;
 

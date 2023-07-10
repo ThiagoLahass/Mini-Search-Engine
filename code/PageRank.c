@@ -10,8 +10,7 @@
 static RBT_PAGE* read_graph_file(RBT_PAGE* rbt, char* graph_file_name, int pages_amount, char** page_names_vector);
 static void compute_page_pr(RBT_PAGE* rbt, char* page_name, int pages_amount);
 
-RBT_PAGE* page_rank_algorithm(RBT_PAGE* rbt, char* graph_file_name, int pages_amount)
-{
+RBT_PAGE* page_rank_algorithm(RBT_PAGE* rbt, char* graph_file_name, int pages_amount){
     char** page_names_vector = calloc(pages_amount, sizeof(char*));
     
     // Sets up the rbt of pages
@@ -36,10 +35,6 @@ RBT_PAGE* page_rank_algorithm(RBT_PAGE* rbt, char* graph_file_name, int pages_am
         }
         stop_value = (double)summation / pages_amount;
     }
-
-    // for(int i=0;i<pages_amount;i++){
-    //     printf("NAME: %s // PR: %f\n", page_names_vector[i], get_page_rank(RBT_PAGE_get(rbt, page_names_vector[i])));
-    // }
     
     for(int i=0;i<pages_amount;i++){
         free(page_names_vector[i]);
@@ -50,8 +45,7 @@ RBT_PAGE* page_rank_algorithm(RBT_PAGE* rbt, char* graph_file_name, int pages_am
 }
 
 
-static RBT_PAGE* read_graph_file(RBT_PAGE* rbt, char* graph_file_name, int pages_amount, char** page_names_vector)
-{
+static RBT_PAGE* read_graph_file(RBT_PAGE* rbt, char* graph_file_name, int pages_amount, char** page_names_vector){
     FILE *graph_file = fopen(graph_file_name, "r");
     if(graph_file == NULL){
         printf("\n Erro 001: Função page_rank_algorithm: Erro Ao abrir arquivo\n");
@@ -66,13 +60,13 @@ static RBT_PAGE* read_graph_file(RBT_PAGE* rbt, char* graph_file_name, int pages
     char* line = NULL;
     size_t sizeLine = 0;
     while(getline(&line, &sizeLine, graph_file) != -1){
-        token = strtok(line, " \t\n"); // Reading page name
+        token = strtok(line, " \t\n");                          // Reading page name
         page_name = strdup(token);
 
         page_names_vector[current_index_vector] = page_name;
         current_index_vector++;
 
-        token = strtok(NULL, " \t\n"); // Reading the amount of outgoing links
+        token = strtok(NULL, " \t\n");                          // Reading the amount of outgoing links
         links_amount = atoi(token);
 
         // Initializing the page being read
@@ -83,12 +77,12 @@ static RBT_PAGE* read_graph_file(RBT_PAGE* rbt, char* graph_file_name, int pages
         
     }
 
-    fseek(graph_file, 0, SEEK_SET);     // move o ponteiro do arquivo para a posição inicial
+    fseek(graph_file, 0, SEEK_SET);                             // move o ponteiro do arquivo para a posição inicial
 
     while(getline(&line, &sizeLine, graph_file) != -1){
-        token = strtok(line, " \t\n");    // Reading influenced page name
+        token = strtok(line, " \t\n");                          // Reading influenced page name
 
-        token = strtok(NULL, " \t\n");    // Reading the amount of outgoing links
+        token = strtok(NULL, " \t\n");                          // Reading the amount of outgoing links
         links_amount = atoi(token);
 
         // Reading the outgoing links and incrementing the number of influenced pages for each one
@@ -100,13 +94,13 @@ static RBT_PAGE* read_graph_file(RBT_PAGE* rbt, char* graph_file_name, int pages
         }
     }
 
-    fseek(graph_file, 0, SEEK_SET);     // move o ponteiro do arquivo para a posição inicial
+    fseek(graph_file, 0, SEEK_SET);                             // move o ponteiro do arquivo para a posição inicial
 
     while(getline(&line, &sizeLine, graph_file) != -1){
-        token = strtok(line, " \t\n");    // Reading influenced page name
+        token = strtok(line, " \t\n");                          // Reading influenced page name
         page_name = token;
         
-        token = strtok(NULL, " \t\n");    // Reading the amount of outgoing links
+        token = strtok(NULL, " \t\n");                          // Reading the amount of outgoing links
         links_amount = atoi(token);
 
         // Reading the outgoing links and inserting the current influenced page into their vectors
@@ -114,7 +108,7 @@ static RBT_PAGE* read_graph_file(RBT_PAGE* rbt, char* graph_file_name, int pages
         for(i = 0; i<links_amount; i++){
             token = strtok(NULL, " \t\n");
             Page* influencer_page = RBT_PAGE_get(rbt, token);
-            if(get_current_index_influenced_pages(influencer_page) == 0) // Checks if the vector has already been initialized
+            if(get_current_index_influenced_pages(influencer_page) == 0)    // Checks if the vector has already been initialized
                 init_influenced_pages(influencer_page);
             add_influenced_page(influencer_page, page_name);
             increment_current_index_influenced_pages(influencer_page);   
@@ -126,8 +120,7 @@ static RBT_PAGE* read_graph_file(RBT_PAGE* rbt, char* graph_file_name, int pages
     return rbt;
 }
 
-void compute_page_pr(RBT_PAGE* rbt, char* page_name, int pages_amount)
-{
+void compute_page_pr(RBT_PAGE* rbt, char* page_name, int pages_amount){
     Page* current_page = RBT_PAGE_get(rbt, page_name);
 
     // Summation
