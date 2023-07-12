@@ -10,7 +10,7 @@
 #define MAX_FILENAME_SIZE 1000
 #define MAX_WORD_SIZE 500
 #define MAX_INDEX_SIZE 500
-#define MAX_PAGENAME_SIZE 1050
+#define MAX_PAGENAME_SIZE 1500
 #define MAX_SEARCH_SIZE 1000
 
 FILE* utility_openFile(char *nameFile, char *action);
@@ -98,8 +98,6 @@ int main(int argc, char* argv[]){
     /*================= FIM ALGORITMO PAGE RANK =================*/
 
     /*=================== ALGORITMO DE BUSCA ====================*/
-    sprintf(file_name, "%s/searches.txt", dir);
-    
     char search[MAX_SEARCH_SIZE];
     char search_aux[MAX_SEARCH_SIZE];
 
